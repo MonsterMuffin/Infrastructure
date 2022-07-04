@@ -1,0 +1,38 @@
+---
+
+- name: copy rclone config copy script
+  ansible.builtin.copy:
+    src: copy-config.sh
+    dest: /volume1/scrips/
+    mode: '755'
+  register: copy_config_script
+
+- name: cron rclone config copy
+  ansible.builtin.cron:
+    name: rclone config copy
+    job: date >> /volume1/log/rclone-config-backup.log 2>&1 && {{ copy_config_script.dest }} >> /volume1/log/rclone-config-backup.log 2>&1 
+    special_time: daily
+
+- name: update rclone
+  ansible.builtin.shell: rclone selfupdate
+  ignore_errors: true
+  register: rclone_update
+
+- block:
+      - name: download rclone install script
+        ansible.builtin.get_url:
+          url: https://rclone.org/install.sh
+          dest: /tmp/install-rclone.sh
+          mode: '755'
+        register: rclone_script
+
+      - name: install rclone
+        ansible.builtin.shell: "{{ rclone_script.dest }}"
+
+      - name: restore config from backup
+        ansible.builtin.copy:
+          remote_src: true
+          src: /volume1/config/rclone.config
+          dest: /root/.config/rclone/rclone.config
+
+  when: rclone_update.rc == '127'
