@@ -4,8 +4,8 @@
   tasks:
 
     - name: Install required system packages
-      apt:
-        pkg:
+      ansible.builtin.apt:
+        name:
           - apt-transport-https
           - ca-certificates
           - curl
@@ -19,22 +19,29 @@
         update_cache: true
 
     - name: Add Docker GPG apt Key
-      apt_key:
+      ansible.builtin.apt_key:
         url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
         state: present
 
     - name: Add Docker Repository
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: deb [arch={{ ansible_architecture }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
         state: present
 
-    - name: Update apt, Install docker-ce & docker-compose
-      apt:
-        pkg:
-          - docker.io
-          - docker-compose
+    - name: Install docker-ce 
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
         state: latest
-        update_cache: true
+        update_cache: yes
+
+    - name: Install docker-compose
+      get_url:
+        url: "{{ docker_compose_url }}"
+        dest: "{{ docker_compose_path }}"
+        mode: 0755
 
     - name: Install Docker Module for Python
       pip:
