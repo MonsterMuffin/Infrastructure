@@ -1,0 +1,11 @@
+---
+- name: Update all packages
+  hosts: linux
+  become: true
+  tasks:
+    - name: ensure all system packages are up to date and autoremove
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+        update_cache: true
+        autoremove: yes

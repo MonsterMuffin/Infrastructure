@@ -1,0 +1,14 @@
+---
+- name: Cleanup Docker
+  hosts: docker
+  become: true
+  
+  tasks:
+    - name: Clean Docker Images
+      community.docker.docker_prune:
+        containers: no
+        volumes: no
+        images: yes
+        builder_cache: yes
+        images_filters:
+          dangling: false

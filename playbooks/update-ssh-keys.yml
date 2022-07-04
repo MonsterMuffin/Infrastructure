@@ -1,0 +1,10 @@
+- hosts: linux
+  become: true
+  tasks:
+
+    - name: Replace All Keys
+      ansible.posix.authorized_key:
+        user: monstermuffin
+        state: present
+        exclusive: True
+        key: https://github.com/monstermuffin.keys
