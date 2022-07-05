@@ -1,0 +1,9 @@
+---
+
+- name: Set timezone to Europe/London
+  hosts: all 
+  become: true
+
+  tasks:
+  timezone:
+    name: Europe/London
