@@ -1,9 +1,7 @@
----
-
-- name: Set timezone to Europe/London
-  hosts: all 
+- hosts: linux
   become: true
-
   tasks:
-  timezone:
-    name: Europe/London
+
+    - name: Set timezone to Europe/London
+      timezone:
+        name: Europe/London
